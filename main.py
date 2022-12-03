@@ -19,11 +19,13 @@ def feature_search(data):
         print(f'One level {i}, I added feature {feature_to_add_at_this_level} to current set')
 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
-    return random.random()
+    for index, row in data.iterrows():
+        print(f'Object {index} has class of {row[0]}')
 
 def main():
     df = pd.read_table("./test_data.txt", delim_whitespace=True, header=None)
-    feature_search(df)
+    leave_one_out_cross_validation(df, None, None)
+    # feature_search(df)
 
 if __name__ == "__main__":
     main()
