@@ -20,6 +20,10 @@ def feature_search(data):
         print(f'One level {i}, I added feature {feature_to_add_at_this_level} to current set')
 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
+    number_correctly_classified = 0
+    for i in current_set, feature_to_add:
+        data = data.drop(i, axis = 1)
+    print(data)
     for i, row_i in data.iterrows():
         object_to_classify = row_i[1:]
         label_object_to_classify = row_i[0]
@@ -38,11 +42,16 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
                 nearest_neighbor_label = row_j[0]
         print(f'--Object {i} has class of {label_object_to_classify}')
         print(f'--Object {i} nearest neighbor is object {nearest_neighbor_location} which has a class of {nearest_neighbor_label}')
+        if label_object_to_classify == nearest_neighbor_label:
+            number_correctly_classified += 1
+    accuracy = number_correctly_classified / (data.shape[0])
+    return accuracy
 
 def main():
     df = pd.read_table("./test_data.txt", delim_whitespace=True, header=None)
-    leave_one_out_cross_validation(df, None, None)
+    leave_one_out_cross_validation(df, [1,2,6,4], 3)
     # feature_search(df)
+    print(df)
 
 if __name__ == "__main__":
     main()
