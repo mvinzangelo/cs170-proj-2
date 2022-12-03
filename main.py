@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import random
 
 def feature_search(data):
@@ -20,13 +21,23 @@ def feature_search(data):
 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
     for i, row_i in data.iterrows():
+        object_to_classify = row_i[1:]
+        label_object_to_classify = row_i[0]
         nearest_neighbor_distance = float('inf')
-        nearest_neighbor_location = float('inf')
+        nearest_neighbor_location = float('inf') 
+        nearest_neighbor_label = float('inf')
         for j, row_j in data.iterrows():
             if j == i:
                 continue
             print(f'Ask if {i} is nearest neighbor with {j}')
-        print(f'--Object {i} has class of {row_i[0]}')
+            # from https://www.geeksforgeeks.org/pandas-compute-the-euclidean-distance-between-two-series/
+            distance = np.sqrt(np.sum([(a-b)*(a-b) for a, b in zip(object_to_classify, row_j[1:])]))
+            if distance < nearest_neighbor_distance:
+                nearest_neighbor_distance = distance
+                nearest_neighbor_location = j
+                nearest_neighbor_label = row_j[0]
+        print(f'--Object {i} has class of {label_object_to_classify}')
+        print(f'--Object {i} nearest neighbor is object {nearest_neighbor_location} which has a class of {nearest_neighbor_label}')
 
 def main():
     df = pd.read_table("./test_data.txt", delim_whitespace=True, header=None)
