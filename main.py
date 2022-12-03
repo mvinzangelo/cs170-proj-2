@@ -1,6 +1,10 @@
 import pandas as pd
 import numpy as np
+import copy
 import random
+
+import warnings
+warnings.filterwarnings("ignore")
 
 def feature_search(data):
     print(data)
@@ -10,24 +14,25 @@ def feature_search(data):
         feature_to_add_this_level = 0
         best_accuracy_so_far = 0
         for j in range(1, len(data.columns)):
-            if j not in current_set_of_features:
+            if not (j in current_set_of_features):
                 print(f'--Considering adding the {j} feature')
                 accuracy = leave_one_out_cross_validation(data, current_set_of_features, j)
                 if accuracy > best_accuracy_so_far:
                     best_accuracy_so_far = accuracy
                     feature_to_add_at_this_level = j
         current_set_of_features.append(feature_to_add_at_this_level)
-        print(f'One level {i}, I added feature {feature_to_add_at_this_level} to current set')
+        print(f'On level {i}, I added feature {feature_to_add_at_this_level} to current set')
+        print(current_set_of_features)
 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
     number_correctly_classified = 0
-    current_set.append(feature_to_add)
+    tmp_set = copy.deepcopy(current_set)
+    tmp_set.append(feature_to_add)
     columns_to_drop = list(range(1,data.shape[1]))
-    columns_to_drop = [x for x in columns_to_drop if x not in current_set]
-    print(columns_to_drop)
+    # from https://stackoverflow.com/questions/4211209/remove-all-the-elements-that-occur-in-one-list-from-another
+    columns_to_drop = [x for x in columns_to_drop if x not in tmp_set]
     for i in columns_to_drop:
         data = data.drop(i, axis = 1)
-    print(data)
     for i, row_i in data.iterrows():
         object_to_classify = row_i[1:]
         label_object_to_classify = row_i[0]
@@ -37,25 +42,24 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
         for j, row_j in data.iterrows():
             if j == i:
                 continue
-            print(f'Ask if {i} is nearest neighbor with {j}')
+            # print(f'Ask if {i} is nearest neighbor with {j}')
             # from https://www.geeksforgeeks.org/pandas-compute-the-euclidean-distance-between-two-series/
             distance = np.sqrt(np.sum([(a-b)*(a-b) for a, b in zip(object_to_classify, row_j[1:])]))
             if distance < nearest_neighbor_distance:
                 nearest_neighbor_distance = distance
                 nearest_neighbor_location = j
                 nearest_neighbor_label = row_j[0]
-        print(f'--Object {i} has class of {label_object_to_classify}')
-        print(f'--Object {i} nearest neighbor is object {nearest_neighbor_location} which has a class of {nearest_neighbor_label}')
+        # print(f'--Object {i} has class of {label_object_to_classify}')
+        # print(f'--Object {i} nearest neighbor is object {nearest_neighbor_location} which has a class of {nearest_neighbor_label}')
         if label_object_to_classify == nearest_neighbor_label:
             number_correctly_classified += 1
     accuracy = number_correctly_classified / (data.shape[0])
     return accuracy
 
 def main():
-    df = pd.read_table("./test_data.txt", delim_whitespace=True, header=None)
-    leave_one_out_cross_validation(df, [1,2,6,4], 3)
-    # feature_search(df)
-    print(df)
+    df = pd.read_table("/home/vinz/repos/cs170/cs170-proj-2/test_data.txt", delim_whitespace=True, header=None)
+    # print(leave_one_out_cross_validation(df, [1,2,6,4], 3))
+    feature_search(df)
 
 if __name__ == "__main__":
     main()
