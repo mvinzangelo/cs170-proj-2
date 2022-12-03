@@ -21,7 +21,11 @@ def feature_search(data):
 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
     number_correctly_classified = 0
-    for i in current_set, feature_to_add:
+    current_set.append(feature_to_add)
+    columns_to_drop = list(range(1,data.shape[1]))
+    columns_to_drop = [x for x in columns_to_drop if x not in current_set]
+    print(columns_to_drop)
+    for i in columns_to_drop:
         data = data.drop(i, axis = 1)
     print(data)
     for i, row_i in data.iterrows():
