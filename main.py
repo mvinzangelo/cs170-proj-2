@@ -19,8 +19,14 @@ def feature_search(data):
         print(f'One level {i}, I added feature {feature_to_add_at_this_level} to current set')
 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
-    for index, row in data.iterrows():
-        print(f'Object {index} has class of {row[0]}')
+    for i, row_i in data.iterrows():
+        nearest_neighbor_distance = float('inf')
+        nearest_neighbor_location = float('inf')
+        for j, row_j in data.iterrows():
+            if j == i:
+                continue
+            print(f'Ask if {i} is nearest neighbor with {j}')
+        print(f'--Object {i} has class of {row_i[0]}')
 
 def main():
     df = pd.read_table("./test_data.txt", delim_whitespace=True, header=None)
