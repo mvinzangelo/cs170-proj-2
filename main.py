@@ -9,11 +9,13 @@ def feature_search(data):
         feature_to_add_this_level = 0
         best_accuracy_so_far = 0
         for j in range(1, len(data.columns)):
-            print(f'--Considering adding the {j} feature')
-            accuracy = leave_one_out_cross_validation(data, current_set_of_features, j)
-            if accuracy > best_accuracy_so_far:
-                best_accuracy_so_far = accuracy
-                feature_to_add_at_this_level = j
+            if j not in current_set_of_features:
+                print(f'--Considering adding the {j} feature')
+                accuracy = leave_one_out_cross_validation(data, current_set_of_features, j)
+                if accuracy > best_accuracy_so_far:
+                    best_accuracy_so_far = accuracy
+                    feature_to_add_at_this_level = j
+        current_set_of_features.append(feature_to_add_at_this_level)
         print(f'One level {i}, I added feature {feature_to_add_at_this_level} to current set')
 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
