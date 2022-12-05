@@ -1,28 +1,30 @@
 import pandas as pd
 import numpy as np
 import copy
-import random
-
 import warnings
+
 warnings.filterwarnings("ignore")
 
 def feature_search(data):
-    print(data)
     current_set_of_features = []
+    accuracies = []
     for i in range(1, len(data.columns)):
-        print(f'I am on the {i}th level of the search tree')
+        # print(f'I am on the {i}th level of the search tree')
         feature_to_add_this_level = 0
         best_accuracy_so_far = 0
         for j in range(1, len(data.columns)):
             if not (j in current_set_of_features):
-                print(f'--Considering adding the {j} feature')
+                # print(f'--Considering adding the {j} feature')
                 accuracy = leave_one_out_cross_validation(data, current_set_of_features, j)
+                # print(accuracy)
                 if accuracy > best_accuracy_so_far:
                     best_accuracy_so_far = accuracy
                     feature_to_add_at_this_level = j
         current_set_of_features.append(feature_to_add_at_this_level)
-        print(f'On level {i}, I added feature {feature_to_add_at_this_level} to current set')
-        print(current_set_of_features)
+        accuracies.append(best_accuracy_so_far)
+        # print(f'On level {i}, I added feature {feature_to_add_at_this_level} to current set')
+    print(current_set_of_features)
+    print(accuracies)
 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
     number_correctly_classified = 0
@@ -57,7 +59,7 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
     return accuracy
 
 def main():
-    df = pd.read_table("/home/vinz/repos/cs170/cs170-proj-2/test_data.txt", delim_whitespace=True, header=None)
+    df = pd.read_table("/home/vinz/repos/cs170/cs170-proj-2/CS170_Large_Data__21.txt", delim_whitespace=True, header=None)
     # print(leave_one_out_cross_validation(df, [1,2,6,4], 3))
     feature_search(df)
 
