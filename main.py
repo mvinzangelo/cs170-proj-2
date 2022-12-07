@@ -6,19 +6,19 @@ def feature_search(data):
     current_set_of_features = []
     accuracies = []
     for i in range(1, len(data[0])):
+        print()
         feature_to_add_this_level = 0
         best_accuracy_so_far = 0
         for j in range(1, len(data[0])):
             if not (j in current_set_of_features):
-                print(f'Considering adding the {j} feature')
                 accuracy = leave_one_out_cross_validation(data, current_set_of_features, j)
-                print(f'---Accuracy of {accuracy}')
+                print(f'---Using features {current_set_of_features} and adding {j} has an accuracy of {accuracy * 100}%')
                 if accuracy > best_accuracy_so_far:
                     best_accuracy_so_far = accuracy
                     feature_to_add_at_this_level = j
         current_set_of_features.append(feature_to_add_at_this_level)
         accuracies.append(best_accuracy_so_far)
-        print(f'*On level {i}, I added feature {feature_to_add_at_this_level} to current set')
+        print(f'Feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far * 100}%')
     print(current_set_of_features)
     print(accuracies)
 
