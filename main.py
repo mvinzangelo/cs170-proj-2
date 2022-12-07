@@ -16,6 +16,8 @@ def feature_search(data):
                 if accuracy > best_accuracy_so_far:
                     best_accuracy_so_far = accuracy
                     feature_to_add_at_this_level = j
+        if best_accuracy_so_far < accuracies[-1]:
+            print('(Warning, accuracy has decreased! Continuing search in case of local maxima')
         current_set_of_features.append(feature_to_add_at_this_level)
         accuracies.append(best_accuracy_so_far)
         print(f'Feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far * 100}%')
