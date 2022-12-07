@@ -3,17 +3,16 @@ import numpy as np
 import copy
 
 def feature_search(data):
-    data_dict = data.to_dict('records')
     current_set_of_features = []
     accuracies = []
-    for i in range(1, len(data.columns)):
+    for i in range(1, len(data[0])):
         print(f'I am on the {i}th level of the search tree')
         feature_to_add_this_level = 0
         best_accuracy_so_far = 0
-        for j in range(1, len(data.columns)):
+        for j in range(1, len(data[0])):
             if not (j in current_set_of_features):
                 print(f'-Considering adding the {j} feature')
-                accuracy = leave_one_out_cross_validation(data_dict, current_set_of_features, j)
+                accuracy = leave_one_out_cross_validation(data, current_set_of_features, j)
                 print(f'---Accuracy of {accuracy}')
                 if accuracy > best_accuracy_so_far:
                     best_accuracy_so_far = accuracy
@@ -28,7 +27,7 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
     number_correctly_classified = 0
     tmp_set = copy.deepcopy(current_set)
     tmp_set.append(feature_to_add)
-    columns_to_drop = list(range(1,len(data[0])))
+    columns_to_drop = list(range(1, len(data[0])))
     # from https://stackoverflow.com/questions/4211209/remove-all-the-elements-that-occur-in-one-list-from-another
     columns_to_drop = [x for x in columns_to_drop if x not in tmp_set]
     for i, row_i in enumerate(data):
@@ -67,8 +66,8 @@ def main():
     df = pd.read_table(file_path_to_test, delim_whitespace=True, header=None)
     print(f'{file_path_to_test} has {df.shape[1] - 1} features (not including the class attribute), with {df.shape[0]} instances.')
     data_dict = df.to_dict('records')
-    starting_accuracy = leave_one_out_cross_validation()
-    feature_search(df)
+    # starting_accuracy = leave_one_out_cross_validation()
+    feature_search(data_dict)
 
 if __name__ == "__main__":
     main()
