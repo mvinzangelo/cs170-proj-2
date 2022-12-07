@@ -37,15 +37,11 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
         for j, row_j in enumerate(data):
             if j == i:
                 continue
-            # print(f'Ask if {i} is nearest neighbor with {j}')
             distance = euclidean_distance(row_i, row_j, columns_to_drop)
-            # print(f'----Distance: {distance}')
             if distance < nearest_neighbor_distance:
                 nearest_neighbor_distance = distance
                 nearest_neighbor_location = j
                 nearest_neighbor_label = row_j[0]
-        # print(f'--Object {i} has class of {label_object_to_classify}')
-        # print(f'--Object {i} nearest neighbor is object {nearest_neighbor_location} which has a class of {nearest_neighbor_label}')
         if label_object_to_classify == nearest_neighbor_label:
             number_correctly_classified += 1
     accuracy = number_correctly_classified / (len(data))
