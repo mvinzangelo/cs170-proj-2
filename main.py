@@ -5,6 +5,9 @@ import copy
 def feature_search(data):
     current_set_of_features = []
     accuracies = []
+    best_accuracy = 0
+    best_set = None
+    found_max = False
     for i in range(1, len(data[0])):
         print()
         feature_to_add_this_level = 0
@@ -16,13 +19,18 @@ def feature_search(data):
                 if accuracy > best_accuracy_so_far:
                     best_accuracy_so_far = accuracy
                     feature_to_add_at_this_level = j
-        if best_accuracy_so_far < accuracies[-1]:
-            print('(Warning, accuracy has decreased! Continuing search in case of local maxima')
         current_set_of_features.append(feature_to_add_at_this_level)
         accuracies.append(best_accuracy_so_far)
+        if best_accuracy_so_far < best_accuracy and not found_max:
+            found_max = True
+            print('(Warning, accuracy has decreased! Continuing search in case of local maxima)')
+        elif best_accuracy_so_far > best_accuracy:
+            best_accuracy = best_accuracy_so_far
+            best_set = copy.deepcopy(current_set_of_features)
+            found_max = False
         print(f'Feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far * 100}%')
-    print(current_set_of_features)
-    print(accuracies)
+    print(f'\nFinished search! The best feature subset is {best_set}, which has an accuracy of {best_accuracy * 100}%')
+    
 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
     number_correctly_classified = 0
