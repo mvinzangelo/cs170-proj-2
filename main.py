@@ -62,7 +62,10 @@ def euclidean_distance(row_a, row_b, zeroed_rows):
     return np.sqrt(distance)
 
 def main():
-    df = pd.read_table("/home/vinz/repos/cs170/cs170-proj-2/required_large.txt", delim_whitespace=True, header=None)
+    file_path_to_test = input("Type in name of file to test: ")
+    type_of_algorithm = input("What type of algorithm do you want to run? (1: Forward Selection 2: Backward Elimination): ")
+    df = pd.read_table(file_path_to_test, delim_whitespace=True, header=None)
+    print(f'{file_path_to_test} has {df.shape[1] - 1} features (not including the class attribute), with {df.shape[0]} instances.')
     feature_search(df)
 
 if __name__ == "__main__":
