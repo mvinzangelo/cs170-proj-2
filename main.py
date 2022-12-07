@@ -6,12 +6,11 @@ def feature_search(data):
     current_set_of_features = []
     accuracies = []
     for i in range(1, len(data[0])):
-        print(f'I am on the {i}th level of the search tree')
         feature_to_add_this_level = 0
         best_accuracy_so_far = 0
         for j in range(1, len(data[0])):
             if not (j in current_set_of_features):
-                print(f'-Considering adding the {j} feature')
+                print(f'Considering adding the {j} feature')
                 accuracy = leave_one_out_cross_validation(data, current_set_of_features, j)
                 print(f'---Accuracy of {accuracy}')
                 if accuracy > best_accuracy_so_far:
@@ -62,11 +61,13 @@ def euclidean_distance(row_a, row_b, zeroed_rows):
 
 def main():
     file_path_to_test = input("Type in name of file to test: ")
-    type_of_algorithm = input("What type of algorithm do you want to run? (1: Forward Selection 2: Backward Elimination): ")
+    type_of_algorithm = input("\nWhat type of algorithm do you want to run? (1: Forward Selection 2: Backward Elimination): ")
     df = pd.read_table(file_path_to_test, delim_whitespace=True, header=None)
-    print(f'{file_path_to_test} has {df.shape[1] - 1} features (not including the class attribute), with {df.shape[0]} instances.')
+    print(f'\n{file_path_to_test} has {df.shape[1] - 1} features (not including the class attribute), with {df.shape[0]} instances.')
     data_dict = df.to_dict('records')
-    # starting_accuracy = leave_one_out_cross_validation()
+    starting_accuracy = leave_one_out_cross_validation(data_dict, [x for x in range(1, len(data_dict[0]) - 1)], len(data_dict[0]))
+    print(f'\nRunning nearest neighbor with all {df.shape[1] - 1} features, using "leave-one-out" evaluation, I get an accuracy of {starting_accuracy * 100}%')
+    print('\nBeginning search.')
     feature_search(data_dict)
 
 if __name__ == "__main__":
