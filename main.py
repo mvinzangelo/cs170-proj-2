@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import copy
 
-def feature_search(data):
+def feature_search(data, algorithm):
     current_set_of_features = []
     accuracies = []
     best_accuracy = 0
@@ -14,8 +14,11 @@ def feature_search(data):
         best_accuracy_so_far = 0
         for j in range(1, len(data[0])):
             if not (j in current_set_of_features):
-                accuracy = leave_one_out_cross_validation(data, current_set_of_features, j)
-                print(f'---Using features {current_set_of_features} and adding {j} has an accuracy of {accuracy * 100}%')
+                accuracy = leave_one_out_cross_validation(data, current_set_of_features, j, algorithm)
+                if algorithm == '1':
+                    print(f'---Using features {current_set_of_features} and adding {j} has an accuracy of {accuracy * 100}%')
+                elif algorithm == '2':
+                    print(f'---Removing features {current_set_of_features} and also {j} has an accuracy of {accuracy * 100}%')
                 if accuracy > best_accuracy_so_far:
                     best_accuracy_so_far = accuracy
                     feature_to_add_at_this_level = j
@@ -28,17 +31,27 @@ def feature_search(data):
             best_accuracy = best_accuracy_so_far
             best_set = copy.deepcopy(current_set_of_features)
             found_max = False
-        print(f'Feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far * 100}%')
-    print(f'\nFinished search! The best feature subset is {best_set}, which has an accuracy of {best_accuracy * 100}%')
+        if algorithm == '1':
+            print(f'Feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far * 100}%')
+        elif algorithm == '2':
+            print(f'Removing feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far * 100}%')
+    if algorithm == '1':
+        print(f'\nFinished search! The best feature subset is {best_set}, which has an accuracy of {best_accuracy * 100}%')
+    elif algorithm == '2':
+        print(f'\nFinished search! The best feature subset to remove is {best_set}, which has an accuracy of {best_accuracy * 100}%')
     
 
-def leave_one_out_cross_validation(data, current_set, feature_to_add):
+def leave_one_out_cross_validation(data, current_set, feature_to_add, algorithm):
     number_correctly_classified = 0
     tmp_set = copy.deepcopy(current_set)
     tmp_set.append(feature_to_add)
-    columns_to_drop = list(range(1, len(data[0])))
-    # from https://stackoverflow.com/questions/4211209/remove-all-the-elements-that-occur-in-one-list-from-another
-    columns_to_drop = [x for x in columns_to_drop if x not in tmp_set]
+    columns_to_drop = None
+    if algorithm == '1':
+        columns_to_drop = list(range(1, len(data[0])))
+        # from https://stackoverflow.com/questions/4211209/remove-all-the-elements-that-occur-in-one-list-from-another
+        columns_to_drop = [x for x in columns_to_drop if x not in tmp_set]
+    elif algorithm == '2':
+        columns_to_drop = tmp_set
     for i, row_i in enumerate(data):
         label_object_to_classify = row_i[0]
         nearest_neighbor_distance = float('inf')
@@ -68,13 +81,14 @@ def euclidean_distance(row_a, row_b, zeroed_rows):
 def main():
     file_path_to_test = input("Type in name of file to test: ")
     type_of_algorithm = input("\nWhat type of algorithm do you want to run? (1: Forward Selection 2: Backward Elimination): ")
+
     df = pd.read_table(file_path_to_test, delim_whitespace=True, header=None)
     print(f'\n{file_path_to_test} has {df.shape[1] - 1} features (not including the class attribute), with {df.shape[0]} instances.')
     data_dict = df.to_dict('records')
-    starting_accuracy = leave_one_out_cross_validation(data_dict, [x for x in range(1, len(data_dict[0]) - 1)], len(data_dict[0]))
+    starting_accuracy = leave_one_out_cross_validation(data_dict, [x for x in range(1, len(data_dict[0]) - 1)], len(data_dict[0]), '1')
     print(f'\nRunning nearest neighbor with all {df.shape[1] - 1} features, using "leave-one-out" evaluation, I get an accuracy of {starting_accuracy * 100}%')
     print('\nBeginning search.')
-    feature_search(data_dict)
+    feature_search(data_dict, type_of_algorithm)
 
 if __name__ == "__main__":
     main()
