@@ -66,6 +66,8 @@ def main():
     type_of_algorithm = input("What type of algorithm do you want to run? (1: Forward Selection 2: Backward Elimination): ")
     df = pd.read_table(file_path_to_test, delim_whitespace=True, header=None)
     print(f'{file_path_to_test} has {df.shape[1] - 1} features (not including the class attribute), with {df.shape[0]} instances.')
+    data_dict = df.to_dict('records')
+    starting_accuracy = leave_one_out_cross_validation()
     feature_search(df)
 
 if __name__ == "__main__":
