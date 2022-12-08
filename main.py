@@ -8,22 +8,29 @@ def feature_search(data, algorithm):
     best_accuracy = 0
     best_set = None
     found_max = False
+    # loop through outer level
     for i in range(1, len(data[0])):
         print()
         feature_to_add_this_level = 0
         best_accuracy_so_far = 0
+        # loop through all features
         for j in range(1, len(data[0])):
+            # check that feature isn't already being accounted for
             if not (j in current_set_of_features):
+                # do cross validation and get accuracy with additional feature added
                 accuracy = leave_one_out_cross_validation(data, current_set_of_features, j, algorithm)
                 if algorithm == '1':
                     print(f'---Using features {current_set_of_features} and adding {j} has an accuracy of {accuracy * 100}%')
                 elif algorithm == '2':
                     print(f'---Removing features {current_set_of_features} and also {j} has an accuracy of {accuracy * 100}%')
+                # compare the best accuracy with current accuracy to get max for level
                 if accuracy > best_accuracy_so_far:
                     best_accuracy_so_far = accuracy
                     feature_to_add_at_this_level = j
+        # add accuracy to list to beck iterated on
         current_set_of_features.append(feature_to_add_at_this_level)
         accuracies.append(best_accuracy_so_far)
+        # compare to see the best accuracy for the overall search
         if best_accuracy_so_far < best_accuracy and not found_max:
             found_max = True
             print('(Warning, accuracy has decreased! Continuing search in case of local maxima)')
@@ -31,10 +38,12 @@ def feature_search(data, algorithm):
             best_accuracy = best_accuracy_so_far
             best_set = copy.deepcopy(current_set_of_features)
             found_max = False
+        # print best accuracy at this level
         if algorithm == '1':
             print(f'Feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far * 100}%')
         elif algorithm == '2':
             print(f'Removing feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far * 100}%')
+    # print best features and accuracy for the search
     if algorithm == '1':
         print(f'\nFinished search! The best feature subset is {best_set}, which has an accuracy of {best_accuracy * 100}%')
     elif algorithm == '2':
