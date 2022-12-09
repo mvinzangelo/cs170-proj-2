@@ -6,6 +6,7 @@ import time
 def feature_search(data, algorithm):
     current_set_of_features = []
     accuracies = []
+    sets = []
     best_accuracy = 0
     best_set = None
     found_max = False
@@ -31,6 +32,7 @@ def feature_search(data, algorithm):
         # add accuracy to list to beck iterated on
         current_set_of_features.append(feature_to_add_at_this_level)
         accuracies.append(best_accuracy_so_far)
+        sets.append(current_set_of_features)
         # compare to see the best accuracy for the overall search
         if best_accuracy_so_far < best_accuracy and not found_max:
             found_max = True
@@ -41,7 +43,7 @@ def feature_search(data, algorithm):
             found_max = False
         # print best accuracy at this level
         if algorithm == '1':
-            print(f'Feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far0}')
+            print(f'Feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far}')
         elif algorithm == '2':
             print(f'Removing feature set {current_set_of_features} was the best, accuracy is {best_accuracy_so_far}')
     # print best features and accuracy for the search
@@ -49,6 +51,8 @@ def feature_search(data, algorithm):
         print(f'\nFinished search! The best feature subset is {best_set}, which has an accuracy of {best_accuracy}')
     elif algorithm == '2':
         print(f'\nFinished search! The best feature subset to remove is {best_set}, which has an accuracy of {best_accuracy}')
+    print(f'Accuracies: {accuracies}')
+    print(f'Sets: {sets}')
     
 
 def leave_one_out_cross_validation(data, current_set, feature_to_add, algorithm):
@@ -104,8 +108,12 @@ def main():
     df = pd.read_table(file_path_to_test, delim_whitespace=True, header=None)
     print(f'\n{file_path_to_test} has {df.shape[1] - 1} features (not including the class attribute), with {df.shape[0]} instances.')
     data_dict = df.to_dict('records')
-    starting_accuracy = leave_one_out_cross_validation(data_dict, [], [], '1')
-    print(f'\nRunning nearest neighbor with all {df.shape[1] - 1} features, using "leave-one-out" evaluation, I get an accuracy of {starting_accuracy }')
+    if type_of_algorithm == '1':
+        starting_accuracy = leave_one_out_cross_validation(data_dict, [], [], '1')
+        print(f'\nRunning nearest neighbor none of the {df.shape[1] - 1} features, using "leave-one-out" evaluation, I get an accuracy of {starting_accuracy }')
+    if type_of_algorithm == '2':
+        starting_accuracy = leave_one_out_cross_validation(data_dict, [], [], '2')
+        print(f'\nRunning nearest neighbor with all {df.shape[1] - 1} features, using "leave-one-out" evaluation, I get an accuracy of {starting_accuracy }')
     print('\nBeginning search.')
     start_time = time.time()
     feature_search(data_dict, type_of_algorithm)
